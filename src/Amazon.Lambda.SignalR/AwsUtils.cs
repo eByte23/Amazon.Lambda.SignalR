@@ -1,7 +1,9 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DataModel;
+using Amazon.Lambda.APIGatewayEvents;
 using Leelou.Lea.Api.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -52,6 +54,7 @@ namespace Amazon.Lambda.SignalR
 
         public static IServiceCollection AddAWSWebsockets(this IServiceCollection services)
         {
+
             //services.AddScoped<IAWSWebSocketManager,AWSWebSocketManager>();
             services.AddScoped<IDynamoDBContext>(c => new DynamoDBContext(c.GetRequiredService<IAmazonDynamoDB>()));
 
@@ -68,36 +71,56 @@ namespace Amazon.Lambda.SignalR
 
         public static IApplicationBuilder UseAWSWebsockets(this IApplicationBuilder app)
         {
-            var feature = app.ServerFeatures.Get<IAWSWebSocketFeature>();
-            if (feature != null)
+
+            app.Use(async (context, next) =>
             {
-                app.Use(async (context, next) =>
+                var request = context.Items["LambdaRequestObject"] as APIGatewayProxyRequest;
+
+                if (string.IsNullOrEmpty(request?.RequestContext?.ConnectionId))
                 {
-                    var hub = app.ApplicationServices.GetRequiredService<AWSSockerServiceHub>();
-                    //CONNECT, MESSAGE, or DISCONNECT
-                    if (feature.EventType == "CONNECT")
-                    {
-                        await hub.OnConnectedAsync();
-                    }
-                    else if (feature.EventType == "DISCONNECT")
-                    {
-                        await hub.OnDisconnectedAsync(new Exception());
-                    }
-                    else if (feature.EventType == "MESSAGE")
-                    {
-                        await hub.OnMessageReceivedAsync(context.Request.Body);
-                    }
-                    else
-                    {
-                        throw new Exception("Unhandled event type");
-                    }
+                    await next();
+                    return;
+                }
 
-                    context.Response.StatusCode = 200;
-                    await context.Response.WriteAsync("Connected");
-                });
+                var feature = new AWSWebSocketFeature
+                {
+                    ConnectionId = request.RequestContext.ConnectionId,
+                    ConnectionAt = request.RequestContext.ConnectionAt,
+                    MessageId = request.RequestContext?.MessageId,
+                    RouteKey = request.RequestContext.RouteKey ?? "",
+                    EventType = request.RequestContext.EventType,
 
-            }
+                    DomainName = request.RequestContext?.DomainName ?? "",
+                    ResourcePath = request.RequestContext?.ResourcePath ?? "",
 
+                };
+
+                context.Features.Set<IAWSWebSocketFeature>(feature);
+
+
+                var hub = app.ApplicationServices.GetRequiredService<AWSSockerServiceHub>();
+                //CONNECT, MESSAGE, or DISCONNECT
+                if (feature.EventType == "CONNECT")
+                {
+                    await hub.OnConnectedAsync();
+                }
+                else if (feature.EventType == "DISCONNECT")
+                {
+                    await hub.OnDisconnectedAsync(new Exception());
+                }
+                else if (feature.EventType == "MESSAGE")
+                {
+                    await hub.OnMessageReceivedAsync(context.Request.Body);
+                }
+                else
+                {
+                    throw new Exception("Unhandled event type");
+                }
+
+                context.Response.StatusCode = 200;
+                await context.Response.WriteAsync("Connected");
+                return;
+            });
 
             return app;
         }

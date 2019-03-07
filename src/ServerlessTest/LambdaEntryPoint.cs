@@ -41,46 +41,69 @@ namespace serverless.test
     public abstract class WarmAPIGatewayProxyFunction : Amazon.Lambda.AspNetCoreServer.APIGatewayProxyFunction
     {
 
-        protected override void MarshallRequest(InvokeFeatures features, APIGatewayProxyRequest apiGatewayRequest, ILambdaContext lambdaContext)
-        {
-            if (!string.IsNullOrEmpty(apiGatewayRequest.RequestContext.ConnectionId))
-            {
-                if(features == null){
-                    Console.WriteLine("null");
-                    features = new InvokeFeatures();
-                }
+        // protected override void PostCreateContext(HostingApplication.Context context, APIGatewayProxyRequest lambdaRequest, ILambdaContext lambdaContext)
+        // {
+        //     if (!string.IsNullOrEmpty(lambdaRequest.RequestContext.ConnectionId))
+        //     {
+        //          Console.WriteLine("gere");
+        //         context.HttpContext.Features.Set<IAWSWebSocketFeature>(new AWSWebSocketFeature
+        //         {
+        //             ConnectionId = lambdaRequest.RequestContext.ConnectionId,
+        //             ConnectionAt = lambdaRequest.RequestContext.ConnectionAt,
+        //             MessageId = lambdaRequest.RequestContext?.MessageId,
+        //             RouteKey = lambdaRequest.RequestContext.RouteKey ?? "",
+        //             EventType = lambdaRequest.RequestContext.EventType,
 
-                Console.WriteLine("gere");
-                features[typeof(IAWSWebSocketFeature)] = new AWSWebSocketFeature
-                {
-                    ConnectionId = apiGatewayRequest.RequestContext.ConnectionId,
-                    ConnectionAt = apiGatewayRequest.RequestContext.ConnectionAt,
-                    MessageId = apiGatewayRequest.RequestContext?.MessageId,
-                    RouteKey = apiGatewayRequest.RequestContext.RouteKey ?? "",
-                    EventType = apiGatewayRequest.RequestContext.EventType,
+        //             DomainName = lambdaRequest.RequestContext?.DomainName ?? "",
+        //             ResourcePath = lambdaRequest.RequestContext?.ResourcePath ?? "",
 
-                    DomainName = apiGatewayRequest.RequestContext?.DomainName ?? "",
-                    ResourcePath = apiGatewayRequest.RequestContext?.ResourcePath ?? "",
+        //         });
+        //     }
 
-                };
-            }
-            base.MarshallRequest(features, apiGatewayRequest, lambdaContext);
-        }
+        //     base.PostCreateContext(context,lambdaRequest,lambdaContext);
+        // }
+
+        // protected override void MarshallRequest(InvokeFeatures features, APIGatewayProxyRequest apiGatewayRequest, ILambdaContext lambdaContext)
+        // {
+        //     if (!string.IsNullOrEmpty(apiGatewayRequest.RequestContext.ConnectionId))
+        //     {
+        //         if (features == null)
+        //         {
+        //             Console.WriteLine("null");
+        //             features = new InvokeFeatures();
+        //         }
+
+        //         Console.WriteLine("gere");
+        //         features[typeof(IAWSWebSocketFeature)] = new AWSWebSocketFeature
+        //         {
+        //             ConnectionId = apiGatewayRequest.RequestContext.ConnectionId,
+        //             ConnectionAt = apiGatewayRequest.RequestContext.ConnectionAt,
+        //             MessageId = apiGatewayRequest.RequestContext?.MessageId,
+        //             RouteKey = apiGatewayRequest.RequestContext.RouteKey ?? "",
+        //             EventType = apiGatewayRequest.RequestContext.EventType,
+
+        //             DomainName = apiGatewayRequest.RequestContext?.DomainName ?? "",
+        //             ResourcePath = apiGatewayRequest.RequestContext?.ResourcePath ?? "",
+
+        //         };
+        //     }
+        //     base.MarshallRequest(features, apiGatewayRequest, lambdaContext);
+        // }
 
         public override async Task<APIGatewayProxyResponse> FunctionHandlerAsync(APIGatewayProxyRequest request, ILambdaContext lambdaContext)
         {
-            Console.WriteLine("In overridden FunctionHandlerAsync");
+            // Console.WriteLine("In overridden FunctionHandlerAsync");
 
-            if (!string.IsNullOrEmpty(request.RequestContext.ConnectionId))
-            {
-                Console.WriteLine(request.RequestContext.ConnectionId ?? "");
-                Console.WriteLine(request.RequestContext.ConnectionAt.ToString());
-                Console.WriteLine(request.RequestContext.RouteKey ?? "");
-                Console.WriteLine(request.RequestContext.ResourcePath ?? "");
-                Console.WriteLine(request.RequestContext.MessageId ?? "");
-                Console.WriteLine(request.RequestContext.DomainName ?? "");
-                Console.WriteLine(request.RequestContext.EventType ?? "");
-            }
+            // if (!string.IsNullOrEmpty(request.RequestContext.ConnectionId))
+            // {
+            //     Console.WriteLine(request.RequestContext.ConnectionId ?? "");
+            //     Console.WriteLine(request.RequestContext.ConnectionAt.ToString());
+            //     Console.WriteLine(request.RequestContext.RouteKey ?? "");
+            //     Console.WriteLine(request.RequestContext.ResourcePath ?? "");
+            //     Console.WriteLine(request.RequestContext.MessageId ?? "");
+            //     Console.WriteLine(request.RequestContext.DomainName ?? "");
+            //     Console.WriteLine(request.RequestContext.EventType ?? "");
+            // }
 
             if (request.Resource == "WarmingLambda")
             {
