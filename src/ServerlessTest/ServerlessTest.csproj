@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <RootNamespace>serverless.test</RootNamespace>
+    <AssemblyName>serverless.test</AssemblyName>
+    <NoWarn>$(NoWarn);NU1605</NoWarn>
+    <GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
+    <AWSProjectType>Lambda</AWSProjectType>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.App" Version="2.1.1"/>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AWSSDK.S3" Version="3.3.15"/>
+    <PackageReference Include="AWSSDK.Extensions.NETCore.Setup" Version="3.3.6"/>
+    <PackageReference Include="AWSSDK.Extensions.NETCore.Setup" Version="3.3.6" />
+    <PackageReference Include="Amazon.Lambda.AspNetCoreServer" Version="3.0.2" />
+    <PackageReference Include="AWSSDK.SimpleNotificationService" Version="3.3.0.17" />
+    <PackageReference Include="AWSSDK.CloudWatch" Version="3.3.2.7" />
+    <PackageReference Include="AWSSDK.Lambda" Version="3.3.19.21" />
+
+    <ProjectReference Include="../Amazon.Lambda.SignalR/Amazon.Lambda.SignalR.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <DotNetCliToolReference Include="Amazon.Lambda.Tools" Version="2.2.0"/>
+  </ItemGroup>
+
+</Project>
