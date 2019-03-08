@@ -1,0 +1,78 @@
+{
+    "Resource": null,
+    "Path": null,
+    "HttpMethod": null,
+    "Headers": {
+        "Host": "t2yh6sjnmk.execute-api.ap-southeast-2.amazonaws.com",
+        "Sec-WebSocket-Extensions": "permessage-deflate; client_max_window_bits",
+        "Sec-WebSocket-Key": "ne1ciVNJaFxbLKbB+FvD9Q==",
+        "Sec-WebSocket-Version": "13",
+        "X-Amzn-Trace-Id": "Root=1-5c82e49a-a63316a24c58d4b9a7ed7a1b",
+        "X-Forwarded-For": "127.0.0.1",
+        "X-Forwarded-Port": "443",
+        "X-Forwarded-Proto": "https"
+    },
+    "MultiValueHeaders": {
+        "Host": [
+            "t2yh6sjnmk.execute-api.ap-southeast-2.amazonaws.com"
+        ],
+        "Sec-WebSocket-Extensions": [
+            "permessage-deflate; client_max_window_bits"
+        ],
+        "Sec-WebSocket-Key": [
+            "ne1ciVNJaFxbLKbB+FvD9Q=="
+        ],
+        "Sec-WebSocket-Version": [
+            "13"
+        ],
+        "X-Amzn-Trace-Id": [
+            "Root=1-5c82e49a-a63316a24c58d4b9a7ed7a1b"
+        ],
+        "X-Forwarded-For": [
+            "127.0.0.1"
+        ],
+        "X-Forwarded-Port": [
+            "443"
+        ],
+        "X-Forwarded-Proto": [
+            "https"
+        ]
+    },
+    "QueryStringParameters": null,
+    "MultiValueQueryStringParameters": null,
+    "PathParameters": null,
+    "StageVariables": null,
+    "RequestContext": {
+        "Path": null,
+        "AccountId": null,
+        "ResourceId": null,
+        "Stage": "dev",
+        "RequestId": "WPioKFrpywMF-gg=",
+        "Identity": {
+            "CognitoIdentityPoolId": null,
+            "AccountId": null,
+            "CognitoIdentityId": null,
+            "Caller": null,
+            "ApiKey": null,
+            "SourceIp": "127.0.0.1",
+            "CognitoAuthenticationType": null,
+            "CognitoAuthenticationProvider": null,
+            "UserArn": null,
+            "UserAgent": null,
+            "User": null
+        },
+        "ResourcePath": null,
+        "HttpMethod": null,
+        "ApiId": "t2yh6sjnmk",
+        "ExtendedRequestId": "WPioKFrpywMF-gg=",
+        "ConnectionId": "WPioKf0xywMCIhA=",
+        "ConnectionAt": 0,
+        "DomainName": "t2yh6sjnmk.execute-api.ap-southeast-2.amazonaws.com",
+        "EventType": "CONNECT",
+        "MessageId": null,
+        "RouteKey": "$connect",
+        "Authorizer": null
+    },
+    "Body": null,
+    "IsBase64Encoded": false
+}

@@ -1,0 +1,16 @@
+{
+    "FunctionName": "serverlesstest-dev-api",
+    "FunctionVersion": "$LATEST",
+    "LogGroupName": "/aws/lambda/serverlesstest-dev-api",
+    "LogStreamName": "2019/03/08/[$LATEST]366d36bb2e514c0180ecc1ag1cfc4121",
+    "MemoryLimitInMB": 1024,
+    "AwsRequestId": "77d6333c-930d-4d11-a5d2-79602ae0748c",
+    "InvokedFunctionArn": "arn:aws:lambda:ap-southeast-2:AAAAAAAAAAAA:function:serverlesstest-dev-api",
+    "RemainingTime": "00:00:05.8060000",
+    "ClientContext": null,
+    "Identity": {
+        "IdentityId": "",
+        "IdentityPoolId": ""
+    },
+    "Logger": {}
+}

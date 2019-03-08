@@ -92,6 +92,10 @@ namespace serverless.test
 
         public override async Task<APIGatewayProxyResponse> FunctionHandlerAsync(APIGatewayProxyRequest request, ILambdaContext lambdaContext)
         {
+
+            Console.WriteLine(JsonConvert.SerializeObject(request));
+            Console.WriteLine(JsonConvert.SerializeObject(lambdaContext));
+
             // Console.WriteLine("In overridden FunctionHandlerAsync");
 
             // if (!string.IsNullOrEmpty(request.RequestContext.ConnectionId))
