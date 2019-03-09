@@ -9,29 +9,29 @@ namespace Amazon.Lambda.SignalR
 {
     public class AWSHubCallerContext : HubCallerContext
     {
-        private readonly HttpContext _httpContext;
+        private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IAWSWebSocketFeature _webSocketFeaure;
 
-        public AWSHubCallerContext(HttpContext httpContext)
+        public AWSHubCallerContext(IHttpContextAccessor httpContextAccessor)
         {
-            this._httpContext = httpContext;
+            this._httpContextAccessor = httpContextAccessor;
 
-            _webSocketFeaure = _httpContext.Features.Get<IAWSWebSocketFeature>();
+            _webSocketFeaure = _httpContextAccessor.HttpContext.Features.Get<IAWSWebSocketFeature>();
         }
 
         public override string ConnectionId => _webSocketFeaure.ConnectionId;
 
-        public override string UserIdentifier => _httpContext.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        public override string UserIdentifier => _httpContextAccessor.HttpContext.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-        public override ClaimsPrincipal User => _httpContext.User;
+        public override ClaimsPrincipal User => _httpContextAccessor.HttpContext.User;
 
-        public override IDictionary<object, object> Items => _httpContext.Items;
+        public override IDictionary<object, object> Items => _httpContextAccessor.HttpContext.Items;
 
-        public override IFeatureCollection Features => _httpContext.Features;
+        public override IFeatureCollection Features => _httpContextAccessor.HttpContext.Features;
 
-        public override CancellationToken ConnectionAborted => _httpContext.RequestAborted;
+        public override CancellationToken ConnectionAborted => _httpContextAccessor.HttpContext.RequestAborted;
 
-        public override void Abort() => _httpContext.Abort();
+        public override void Abort() => _httpContextAccessor.HttpContext.Abort();
 
     }
 }

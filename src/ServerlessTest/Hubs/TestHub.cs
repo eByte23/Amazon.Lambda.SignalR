@@ -26,6 +26,7 @@ namespace serverless.Hubs
         public override Task OnConnectedAsync()
         {
 
+
             _logger.LogError("Yay connected");
 
 

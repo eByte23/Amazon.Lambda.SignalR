@@ -36,6 +36,9 @@ namespace serverless.test
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
             services
+                .AddHttpContextAccessor();
+
+            services
                 .AddAWSService<IAmazonApiGatewayManagementApi>()
                 .AddAWSService<IAmazonDynamoDB>()
                 .AddAWSWebsockets()

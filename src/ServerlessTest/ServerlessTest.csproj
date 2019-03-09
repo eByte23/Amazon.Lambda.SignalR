@@ -19,7 +19,7 @@
     <PackageReference Include="AWSSDK.SimpleNotificationService" Version="3.3.0.17" />
     <PackageReference Include="AWSSDK.CloudWatch" Version="3.3.2.7" />
     <PackageReference Include="AWSSDK.Lambda" Version="3.3.19.21" />
-
+    <ProjectReference Include="../../../aws-lambda-dotnet/Libraries/src/Amazon.Lambda.AspNetCoreServer/Amazon.Lambda.AspNetCoreServer.csproj" />
     <ProjectReference Include="../Amazon.Lambda.SignalR/Amazon.Lambda.SignalR.csproj" />
   </ItemGroup>
   <ItemGroup>
