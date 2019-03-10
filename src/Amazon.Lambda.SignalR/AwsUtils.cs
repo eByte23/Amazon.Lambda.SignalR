@@ -1,11 +1,15 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Amazon.ApiGatewayManagementApi;
 using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DataModel;
 using Amazon.Lambda.APIGatewayEvents;
+using Amazon.Runtime.Internal.Util;
+using Amazon.Util;
 using Leelou.Lea.Api.Services;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Configuration;
@@ -54,16 +58,42 @@ namespace Amazon.Lambda.SignalR
 
         public static IServiceCollection AddAWSWebsockets(this IServiceCollection services)
         {
+            services
+                .AddHttpContextAccessor()
+                .AddAWSService<IAmazonDynamoDB>();
 
-            //services.AddScoped<IAWSWebSocketManager,AWSWebSocketManager>();
-            services.AddScoped<IDynamoDBContext>(c => new DynamoDBContext(c.GetRequiredService<IAmazonDynamoDB>()));
+            services.AddScoped<IAmazonApiGatewayManagementApi>(c =>
+            {
+                var request = c.GetRequiredService<IHttpContextAccessor>().HttpContext.Items["LambdaRequestObject"] as APIGatewayProxyRequest;
+                var client = new AmazonApiGatewayManagementApiClient(new AmazonApiGatewayManagementApiConfig()
+                {
+                    ServiceURL = $"https://{request.RequestContext.DomainName}/{request.RequestContext.Stage}"
+                });
+                return client;
+            });
+            services.AddScoped<IDynamoDBContext>(c =>
+            {
+                var context = new DynamoDBContext(c.GetRequiredService<IAmazonDynamoDB>());
+                var config = c.GetRequiredService<IConfiguration>();
+
+                //This could be resolved as a singleton
+                var tableName = config["SOCKETCONNECTIONS_TABLE"];
+
+                if (!string.IsNullOrEmpty(tableName))
+                {
+                    Console.WriteLine("table name:  " + tableName);
+                    AWSConfigsDynamoDB.Context.AddAlias(new TableAlias(TableNameConstants.SocketConnection, tableName));
+                }
+
+                return context;
+            });
 
             services
                 .AddScoped<IHubClients, AWSHubCallerClients>()
                 .AddScoped<IGroupManager, AWSSocketGroupManager>()
                 .AddScoped<IAWSSocketConnectionStore<SocketConnection>, DynamoDbSocketConnectionStore>()
                 .AddScoped<IAWSSocketManager, AWSSocketManager>()
-                .AddScoped<HubCallerContext, AWSHubCallerContext>();
+                .AddTransient<HubCallerContext, AWSHubCallerContext>();
 
 
             return services;
@@ -74,6 +104,7 @@ namespace Amazon.Lambda.SignalR
 
             app.Use(async (context, next) =>
             {
+                //Do make use of the IWebSocketFeature in the runtime? Then we don't need this
                 var request = context.Items["LambdaRequestObject"] as APIGatewayProxyRequest;
 
                 if (string.IsNullOrEmpty(request?.RequestContext?.ConnectionId))
@@ -82,6 +113,7 @@ namespace Amazon.Lambda.SignalR
                     return;
                 }
 
+                //Do make use of the IWebSocketFeature in the runtime? Then we don't need this
                 var feature = new AWSWebSocketFeature
                 {
                     ConnectionId = request.RequestContext.ConnectionId,
@@ -92,11 +124,9 @@ namespace Amazon.Lambda.SignalR
 
                     DomainName = request.RequestContext?.DomainName ?? "",
                     ResourcePath = request.RequestContext?.ResourcePath ?? "",
-
                 };
 
                 context.Features.Set<IAWSWebSocketFeature>(feature);
-
 
                 var hub = app.ApplicationServices.GetRequiredService<AWSSockerServiceHub>();
                 //CONNECT, MESSAGE, or DISCONNECT

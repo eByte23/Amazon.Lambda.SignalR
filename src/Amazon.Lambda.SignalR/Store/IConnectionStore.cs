@@ -10,8 +10,8 @@ namespace Amazon.Lambda.SignalR
         Task RemoveConnectionFromGroupAsync(string connectionId, string groupName, CancellationToken cancellationToken = default(CancellationToken));
 
 
-        Task StoreConnection(string connectionId, string userId);
-        Task RemoveConnection(string connectionId);
+        Task StoreConnectionAsync(string connectionId, string userId);
+        Task RemoveConnectionAsync(string connectionId);
 
         Task<List<T>> GetGroup(string groupName);
 

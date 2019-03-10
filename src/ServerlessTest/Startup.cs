@@ -36,13 +36,8 @@ namespace serverless.test
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
             services
-                .AddHttpContextAccessor();
-
-            services
-                .AddAWSService<IAmazonApiGatewayManagementApi>()
-                .AddAWSService<IAmazonDynamoDB>()
                 .AddAWSWebsockets()
-                .AddScoped<AWSSockerServiceHub, TestHub>();
+                .AddTransient<AWSSockerServiceHub, TestHub>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

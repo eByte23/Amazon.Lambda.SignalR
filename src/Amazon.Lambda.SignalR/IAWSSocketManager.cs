@@ -1,3 +1,5 @@
+using System;
+using System.IO;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
@@ -24,19 +26,22 @@ namespace Amazon.Lambda.SignalR
         {
             try
             {
-
-                var sendResult = await _apiGatewayManagementApi.PostToConnectionAsync(new PostToConnectionRequest()
+                PostToConnectionResponse sendResult;
+                using (var ms = new MemoryStream(System.Text.Encoding.UTF8.GetBytes((string)method)))
                 {
-                    ConnectionId = connectionId
-                });
-
+                    sendResult = await _apiGatewayManagementApi.PostToConnectionAsync(new PostToConnectionRequest()
+                    {
+                        ConnectionId = connectionId,
+                        Data = ms
+                    });
+                }
                 if (sendResult.HttpStatusCode == HttpStatusCode.OK)
                 {
                     return;
                 }
                 else if (sendResult.HttpStatusCode == HttpStatusCode.Gone)
                 {
-                    Task.Run(() => _connectionStore.RemoveConnection(connectionId));
+                    Task.Run(() => _connectionStore.RemoveConnectionAsync(connectionId));
                 }
                 else
                 {
@@ -46,13 +51,21 @@ namespace Amazon.Lambda.SignalR
             catch (GoneException e)
             {
                 _logger.LogWarning($"ConnectionId: {connectionId} received a GoneException, {e.Message.ToString()}");
-                await _connectionStore.RemoveConnection(connectionId);
+                await _connectionStore.RemoveConnectionAsync(connectionId);
             }
             catch (Amazon.ApiGatewayManagementApi.Model.ForbiddenException e)
             {
                 _logger.LogError($"Error sending message to connectionId: {connectionId}, {e.Message.ToString()}");
             }
             catch (Amazon.ApiGatewayManagementApi.Model.PayloadTooLargeException e)
+            {
+                _logger.LogError($"Error sending message to connectionId: {connectionId}, {e.Message.ToString()}");
+            }
+            catch (AggregateException e)
+            {
+                _logger.LogError($"Error sending message to connectionId: {connectionId}, {e.Message.ToString()}");
+            }
+            catch (Exception e)
             {
                 _logger.LogError($"Error sending message to connectionId: {connectionId}, {e.Message.ToString()}");
             }

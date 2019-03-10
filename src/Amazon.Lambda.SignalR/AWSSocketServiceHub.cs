@@ -55,7 +55,7 @@ namespace Leelou.Lea.Api.Services
 
     public abstract class AWSSockerServiceHub : IAWSSocektService, IDisposable //where THub :Hub
     {
-        private readonly HubCallerContext _hubCallerContext;
+        private HubCallerContext _hubCallerContext;
         public IGroupManager _groups;
 
         private IHubClients _clients;
@@ -94,7 +94,17 @@ namespace Leelou.Lea.Api.Services
             }
         }
 
-        public HubCallerContext Context { get; set; }
+        public HubCallerContext Context
+        {
+            get
+            {
+                return _hubCallerContext;
+            }
+            set
+            {
+                _hubCallerContext = value;
+            }
+        }
 
 
         public void Dispose()

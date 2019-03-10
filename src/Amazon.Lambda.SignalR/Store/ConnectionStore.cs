@@ -5,16 +5,19 @@ using System.Threading;
 using System.Threading.Tasks;
 using Amazon.DynamoDBv2.DataModel;
 using Amazon.DynamoDBv2.DocumentModel;
+using Microsoft.Extensions.Logging;
 
 namespace Amazon.Lambda.SignalR
 {
     public class DynamoDbSocketConnectionStore : IAWSSocketConnectionStore<SocketConnection>
     {
         private readonly IDynamoDBContext _context;
+        private readonly ILogger<DynamoDbSocketConnectionStore> _logger;
 
-        public DynamoDbSocketConnectionStore(IDynamoDBContext context)
+        public DynamoDbSocketConnectionStore(IDynamoDBContext context, ILogger<DynamoDbSocketConnectionStore> logger)
         {
             this._context = context;
+            this._logger = logger;
         }
 
         public async Task AddConnectionToGroupAsync(string connectionId, string groupName, CancellationToken cancellationToken = default(CancellationToken))
@@ -102,13 +105,15 @@ namespace Amazon.Lambda.SignalR
             throw new NotImplementedException();
         }
 
-        public Task RemoveConnection(string connectionId)
+        public Task RemoveConnectionAsync(string connectionId)
         {
             return _context.DeleteAsync<SocketConnection>(connectionId);
         }
 
-        public Task StoreConnection(string connectionId, string userId)
+        public Task StoreConnectionAsync(string connectionId, string userId)
         {
+            _logger.LogInformation($"Storing connectionId: {connectionId}");
+
             var connection = new SocketConnection
             {
                 ConnectionId = connectionId,
@@ -120,9 +125,15 @@ namespace Amazon.Lambda.SignalR
         }
     }
 
-    [DynamoDBTable("SocketConnections")]
+    public class TableNameConstants
+    {
+        public const string SocketConnection = "SocketConnections";
+
+    }
+    [DynamoDBTable(TableNameConstants.SocketConnection)]
     public class SocketConnection
     {
+
         [DynamoDBHashKey]
         public string ConnectionId { get; set; }
 

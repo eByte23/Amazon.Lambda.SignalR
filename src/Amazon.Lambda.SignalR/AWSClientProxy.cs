@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.Extensions.Logging;
 
 namespace Amazon.Lambda.SignalR
 {
@@ -11,6 +12,7 @@ namespace Amazon.Lambda.SignalR
         private readonly Func<IAWSSocketConnectionStore<SocketConnection>, Task<List<SocketConnection>>> _getConnections;
         private readonly IAWSSocketConnectionStore<SocketConnection> _connectionStore;
         private readonly IAWSSocketManager _awsSocketManager;
+        private ILogger<AWSClientProxy> _logger;
 
         public AWSClientProxy(Func<IAWSSocketConnectionStore<SocketConnection>, Task<List<SocketConnection>>> getConnections,
             IAWSSocketConnectionStore<SocketConnection> connectionStore,
@@ -27,13 +29,14 @@ namespace Amazon.Lambda.SignalR
         {
 
             var connections = await _getConnections(_connectionStore);
-            Task[] sendToConnectionTasks = new Task[] { };
+
+            var sendToConnectionTasks = new List<Task>();
             foreach (var connection in connections)
             {
-                sendToConnectionTasks[sendToConnectionTasks.Length] = _awsSocketManager.SendCoreAsync(connection.ConnectionId, method, args, cancellationToken);
+                sendToConnectionTasks.Add(_awsSocketManager.SendCoreAsync(connection.ConnectionId, method, args ?? null, cancellationToken));
             }
 
-            Task.WaitAll(sendToConnectionTasks);
+            Task.WaitAll(sendToConnectionTasks.ToArray());
 
 
             return;

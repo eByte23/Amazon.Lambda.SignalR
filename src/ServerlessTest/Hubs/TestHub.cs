@@ -1,5 +1,7 @@
+using System;
 using System.IO;
 using System.Threading.Tasks;
+using Amazon.Lambda.SignalR;
 using Leelou.Lea.Api.Services;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
@@ -11,26 +13,30 @@ namespace serverless.Hubs
     public class TestHub : AWSSockerServiceHub
     {
         private readonly ILogger<TestHub> _logger;
+        private readonly IAWSSocketConnectionStore<SocketConnection> _connectionStore;
 
         public TestHub(
             HubCallerContext hubCallerContext,
             IGroupManager groups,
             IHubClients clients,
-            ILogger<TestHub> logger
+            ILogger<TestHub> logger,
+            IAWSSocketConnectionStore<SocketConnection> connectionStore
          ) : base(hubCallerContext, groups, clients)
         {
             this._logger = logger;
+            this._connectionStore = connectionStore;
         }
 
 
-        public override Task OnConnectedAsync()
+        public override async Task OnConnectedAsync()
         {
+            //Temp
+            string userId = Guid.NewGuid().ToString();
+            await _connectionStore.StoreConnectionAsync(Context.ConnectionId, userId);
 
+            _logger.LogInformation($"Yay connected. ConnectionId: {Context.ConnectionId} is associated to userId: {userId}");
 
-            _logger.LogError("Yay connected");
-
-
-            return Task.CompletedTask;
+            return;
         }
 
 
@@ -46,18 +52,21 @@ namespace serverless.Hubs
             if (content == null) return;
 
 
-            _logger.LogError("Socket: message"+content);
+            _logger.LogInformation("Socket: message" + contentString);
+
+            await Clients.All.SendAsync(contentString, "sss");
 
 
             return;
         }
 
 
-        public override Task OnDisconnectedAsync(System.Exception exception)
+        public override async Task OnDisconnectedAsync(System.Exception exception)
         {
+            _logger.LogWarning($"Disconnection connectionId: {Context.ConnectionId}");
 
-
-            return Task.CompletedTask;
+            await _connectionStore.RemoveConnectionAsync(Context.ConnectionId);
+            return;
         }
     }
 }

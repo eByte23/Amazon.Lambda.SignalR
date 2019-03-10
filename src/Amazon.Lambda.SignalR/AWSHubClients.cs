@@ -8,18 +8,22 @@ namespace Amazon.Lambda.SignalR
     {
         private readonly IAWSSocketConnectionStore<SocketConnection> _socketConnectionStore;
         private readonly IAWSSocketManager _awsSocketManager;
+        private readonly AWSClientProxy _allClientProxy;
 
-        public AWSHubCallerClients(IAWSSocketConnectionStore<SocketConnection> socketConnectionStore, IAWSSocketManager awsSocketManager)
+        public AWSHubCallerClients(IAWSSocketConnectionStore<SocketConnection> socketConnectionStore,
+            IAWSSocketManager awsSocketManager)
         {
             this._socketConnectionStore = socketConnectionStore;
             this._awsSocketManager = awsSocketManager;
+
+            _allClientProxy = new AWSClientProxy(((x) => x.GetAllClients()), _socketConnectionStore, _awsSocketManager);
         }
 
         public IClientProxy Caller => throw new NotImplementedException();
 
         public IClientProxy Others => throw new NotImplementedException();
 
-        public IClientProxy All => throw new NotImplementedException();
+        public IClientProxy All =>  _allClientProxy;
 
         public IClientProxy AllExcept(IReadOnlyList<string> excludedConnectionIds)
         {

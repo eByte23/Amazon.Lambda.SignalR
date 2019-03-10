@@ -12,6 +12,12 @@ provider:
         - "execute-api:ManageConnections"
       Resource:
         - "arn:aws:execute-api:*:*:**/@connections/*"
+    - Effect: Allow
+      Action:
+        - "dynamodb:*"
+      Resource:
+        - "arn:aws:dynamodb:ap-southeast-2:*:**/*"
+
   #   - Effect: Allow
   #     Action:
   #       - "dynamodb:PutItem"
@@ -27,7 +33,7 @@ provider:
   #           - - Fn::GetAtt: [ChatConnectionsTable, Arn]
   #             - "*"
   # environment:
-  #   CHATCONNECTION_TABLE:
+  #   SOCKETCONNECTIONS_TABLE:
   #     Ref: ChatConnectionsTable
 
   websocketApiName: websocket-chat-${self:provider.stage}
@@ -45,26 +51,30 @@ functions:
          method: ANY
       - websocket:
          route: $connect
-         #authorizer: authorizerFunc # references the authorizerFunc function below
+        #authorizer: authorizerFunc # references the authorizerFunc function below
       - websocket:
-         route: $disconnect
+          route: $disconnect
       - websocket:
           route: $default
 
-  #         resources:
-  # Resources:
-  #   ChatConnectionsTable:
-  #     Type: AWS::DynamoDB::Table
-  #     Properties:
-  #       AttributeDefinitions:
-  #         - AttributeName: connectionId
-  #           AttributeType: S
-  #       KeySchema:
-  #         - AttributeName: connectionId
-  #           KeyType: HASH
-  #       ProvisionedThroughput:
-  #         ReadCapacityUnits: 5
-  #         WriteCapacityUnits: 5
+# resources:
+#   Resources:
+#     ChatConnectionsTable:
+#       Type: AWS::DynamoDB::Table
+#       Properties:
+#         AttributeDefinitions:
+#           - AttributeName: connectionId
+#             AttributeType: S
+#           - AttributeName: userId
+#             AttributeType: S
+#         KeySchema:
+#           - AttributeName: connectionId
+#             KeyType: HASH
+#           - AttributeName: userId
+#             KeyType: RANGE
+#         ProvisionedThroughput:
+#           ReadCapacityUnits: 2
+#           WriteCapacityUnits: 2
 
 
 
