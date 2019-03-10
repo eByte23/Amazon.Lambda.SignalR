@@ -40,6 +40,12 @@ namespace serverless.Hubs
         }
 
 
+        public static Task SendValueAsync(string value, IHubClients context)
+        {
+
+
+            return context.All.SendAsync(value,"sss");
+        }
 
         public override async Task OnMessageReceivedAsync(Stream content)
         {

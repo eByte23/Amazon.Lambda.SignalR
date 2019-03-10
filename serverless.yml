@@ -3,6 +3,7 @@ service: serverlesstest
 provider:
   name: aws
   runtime: dotnetcore2.1
+  memorySize: 512
   region: ap-southeast-2
   stackName: ${self:service}-${self:provider.stage}
   stage: ${opt:stage, 'dev'}
@@ -17,7 +18,15 @@ provider:
         - "dynamodb:*"
       Resource:
         - "arn:aws:dynamodb:ap-southeast-2:*:**/*"
-
+  environment:
+    websocketapi:
+      Fn::Join:
+        - ""
+        - - "https://"
+          - "Ref" : "WebsocketsApi"
+          - ".execute-api.ap-southeast-2."
+          - "Ref" : "AWS::URLSuffix"
+          - "/dev"
   #   - Effect: Allow
   #     Action:
   #       - "dynamodb:PutItem"
@@ -45,6 +54,8 @@ package:
 functions:
   api:
     handler: serverless.test::serverless.test.LambdaEntryPoint::FunctionHandlerAsync
+    memorySize: 256
+    timeout: 20
     events:
       - http:
          path: /{proxy+}

@@ -65,9 +65,12 @@ namespace Amazon.Lambda.SignalR
             services.AddScoped<IAmazonApiGatewayManagementApi>(c =>
             {
                 var request = c.GetRequiredService<IHttpContextAccessor>().HttpContext.Items["LambdaRequestObject"] as APIGatewayProxyRequest;
+                var config = c.GetRequiredService<IConfiguration>();
+                var websocketApiUrl = config["websocketapi"];
                 var client = new AmazonApiGatewayManagementApiClient(new AmazonApiGatewayManagementApiConfig()
                 {
-                    ServiceURL = $"https://{request.RequestContext.DomainName}/{request.RequestContext.Stage}"
+                    ServiceURL = websocketApiUrl
+                    //$"https://{request.RequestContext.DomainName}/{request.RequestContext.Stage}"
                 });
                 return client;
             });

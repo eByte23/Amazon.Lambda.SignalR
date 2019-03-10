@@ -24,6 +24,7 @@ namespace Amazon.Lambda.SignalR
 
         public async Task SendCoreAsync(string connectionId, string method, object[] args, CancellationToken cancellationToken)
         {
+            _logger.LogInformation($"Sending data to connectionId: {connectionId} data: {method}");
             try
             {
                 PostToConnectionResponse sendResult;
@@ -45,29 +46,36 @@ namespace Amazon.Lambda.SignalR
                 }
                 else
                 {
-                    _logger.LogError($"Error sending message to connectionId: {connectionId}, httpStatus: {sendResult.HttpStatusCode}");
+                    _logger.LogError($"Error1 sending message to connectionId: {connectionId}, httpStatus: {sendResult.HttpStatusCode}");
                 }
             }
             catch (GoneException e)
             {
-                _logger.LogWarning($"ConnectionId: {connectionId} received a GoneException, {e.Message.ToString()}");
+                _logger.LogWarning($"ConnectionId: {connectionId} received a GoneException, {e.Message.ToString()} ,{e.InnerException?.Message?.ToString()}");
                 await _connectionStore.RemoveConnectionAsync(connectionId);
             }
             catch (Amazon.ApiGatewayManagementApi.Model.ForbiddenException e)
             {
-                _logger.LogError($"Error sending message to connectionId: {connectionId}, {e.Message.ToString()}");
+                _logger.LogError($"Error2 sending message to connectionId: {connectionId}, {e.Message.ToString()} ,{e.InnerException?.Message?.ToString()}");
             }
             catch (Amazon.ApiGatewayManagementApi.Model.PayloadTooLargeException e)
             {
-                _logger.LogError($"Error sending message to connectionId: {connectionId}, {e.Message.ToString()}");
+                _logger.LogError($"Error3 sending message to connectionId: {connectionId}, {e.Message.ToString()} ,{e.InnerException?.Message?.ToString()}");
             }
             catch (AggregateException e)
             {
-                _logger.LogError($"Error sending message to connectionId: {connectionId}, {e.Message.ToString()}");
+                _logger.LogError($"Error4 sending message to connectionId: {connectionId}, {e.Message.ToString()} ,{e.InnerException?.Message?.ToString()}");
+            }
+            catch (ObjectDisposedException e)
+            {
+                _logger.LogWarning($"Removing connectionId: {connectionId} from store.");
+                await _connectionStore.RemoveConnectionAsync(connectionId);
             }
             catch (Exception e)
             {
-                _logger.LogError($"Error sending message to connectionId: {connectionId}, {e.Message.ToString()}");
+                _logger.LogError($"Error5 sending message to connectionId: {connectionId}, {e.Message.ToString()} ,{e.InnerException?.Message?.ToString()}");
+                _logger.LogWarning($"Removing connectionId: {connectionId} from store.");
+                await _connectionStore.RemoveConnectionAsync(connectionId);
             }
 
 
