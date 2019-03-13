@@ -10,8 +10,7 @@ We would utilise one lambda func for all api and socket interactions.
 
 ### Stages
 
-- [x] - Make an APIGateway and Websockets gateway work together happily
-- [ ] - Investigate and use IWebSocketFeature 
+- [ ] - Make an APIGateway and Websockets gateway work together happily
 - [ ] - Work on SignalR API's
 - [ ] - Ask for help to make it better
 

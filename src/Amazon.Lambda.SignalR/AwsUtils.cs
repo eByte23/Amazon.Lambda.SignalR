@@ -77,16 +77,7 @@ namespace Amazon.Lambda.SignalR
             services.AddScoped<IDynamoDBContext>(c =>
             {
                 var context = new DynamoDBContext(c.GetRequiredService<IAmazonDynamoDB>());
-                var config = c.GetRequiredService<IConfiguration>();
 
-                //This could be resolved as a singleton
-                var tableName = config["SOCKETCONNECTIONS_TABLE"];
-
-                if (!string.IsNullOrEmpty(tableName))
-                {
-                    Console.WriteLine("table name:  " + tableName);
-                    AWSConfigsDynamoDB.Context.AddAlias(new TableAlias(TableNameConstants.SocketConnection, tableName));
-                }
 
                 return context;
             });
@@ -104,6 +95,17 @@ namespace Amazon.Lambda.SignalR
 
         public static IApplicationBuilder UseAWSWebsockets(this IApplicationBuilder app)
         {
+
+            var config = app.ApplicationServices.GetRequiredService<IConfiguration>();
+
+            //This could be resolved as a singleton
+            var tableName = config["SOCKETCONNECTIONS_TABLE"];
+
+            if (!string.IsNullOrEmpty(tableName))
+            {
+                Console.WriteLine("table name:  " + tableName);
+                AWSConfigsDynamoDB.Context.AddAlias(new TableAlias(TableNameConstants.SocketConnection, tableName));
+            }
 
             app.Use(async (context, next) =>
             {
