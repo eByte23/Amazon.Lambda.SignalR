@@ -1,4 +1,4 @@
-service: serverlesstest
+service: serverlesstest-dawson
 
 provider:
   name: aws
@@ -27,23 +27,23 @@ provider:
           - ".execute-api.ap-southeast-2."
           - "Ref" : "AWS::URLSuffix"
           - "/dev"
-  #   - Effect: Allow
-  #     Action:
-  #       - "dynamodb:PutItem"
-  #       - "dynamodb:GetItem"
-  #       - "dynamodb:UpdateItem"
-  #       - "dynamodb:DeleteItem"
-  #       - "dynamodb:Query"
-  #       - "dynamodb:Scan"
-  #     Resource:
-  #       - Fn::GetAtt: [ChatConnectionsTable, Arn]
-  #       - Fn::Join:
-  #           - "/"
-  #           - - Fn::GetAtt: [ChatConnectionsTable, Arn]
-  #             - "*"
+    # - Effect: Allow
+    #   Action:
+    #     - "dynamodb:*"
+        # - "dynamodb:GetItem"
+        # - "dynamodb:UpdateItem"
+        # - "dynamodb:DeleteItem"
+        # - "dynamodb:Query"
+        # - "dynamodb:Scan"
+      # Resource:
+      #   - Fn::GetAtt: [ChatConnectionsTable, Arn]
+      #   - Fn::Join:
+      #       - "/"
+      #       - - Fn::GetAtt: [ChatConnectionsTable, Arn]
+      #         - "*"
   # environment:
-  #   SOCKETCONNECTIONS_TABLE:
-  #     Ref: ChatConnectionsTable
+    SOCKETCONNECTIONS_TABLE:
+      Ref: ChatConnectionsTable
 
   websocketApiName: websocket-chat-${self:provider.stage}
   websocketApiRouteSelectionExpression: $request.body.action
@@ -68,24 +68,24 @@ functions:
       - websocket:
           route: $default
 
-# resources:
-#   Resources:
-#     ChatConnectionsTable:
-#       Type: AWS::DynamoDB::Table
-#       Properties:
-#         AttributeDefinitions:
-#           - AttributeName: connectionId
-#             AttributeType: S
-#           - AttributeName: userId
-#             AttributeType: S
-#         KeySchema:
-#           - AttributeName: connectionId
-#             KeyType: HASH
-#           - AttributeName: userId
-#             KeyType: RANGE
-#         ProvisionedThroughput:
-#           ReadCapacityUnits: 2
-#           WriteCapacityUnits: 2
+resources:
+  Resources:
+    ChatConnectionsTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        AttributeDefinitions:
+          - AttributeName: ConnectionId
+            AttributeType: S
+          - AttributeName: UserId
+            AttributeType: S
+        KeySchema:
+          - AttributeName: ConnectionId
+            KeyType: HASH
+          - AttributeName: UserId
+            KeyType: RANGE
+        ProvisionedThroughput:
+          ReadCapacityUnits: 2
+          WriteCapacityUnits: 2
 
 
 
