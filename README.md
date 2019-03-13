@@ -10,7 +10,9 @@ We would utilise one lambda func for all api and socket interactions.
 
 ### Stages
 
-- [ ] - Make an APIGateway and Websockets gateway work together happily
+- [x] - Make an APIGateway and Websockets gateway work together happily
+= [ ] - Write tests
+- [ ] - Clean Up API lineup more with SignalR (e.g. hub activator)
 - [ ] - Work on SignalR API's
 - [ ] - Ask for help to make it better
 
@@ -23,6 +25,9 @@ https://github.com/aws/aws-lambda-dotnet
 
 ## Notes
 
+This is fixed in own fork of the below repo.
+
+Howvever on mainstream branch.
 When running websocket request through api we get errors in
 https://github.com/aws/aws-lambda-dotnet/blob/master/Libraries/src/Amazon.Lambda.AspNetCoreServer/APIGatewayProxyFunction.cs
 
